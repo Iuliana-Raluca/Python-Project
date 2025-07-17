@@ -1,5 +1,6 @@
 import math
 
+
 class MathService:
     @staticmethod
     def factorial(n: int) -> int:
@@ -7,7 +8,7 @@ class MathService:
             result = math.factorial(n)
             return result
         except OverflowError:
-            raise ValueError("Rezultatul factorialului este prea mare pentru a fi reprezentat.")
+            raise ValueError("Rezultatul factorialului este prea mare.")
 
     @staticmethod
     def pow(a: int, b: int) -> int:

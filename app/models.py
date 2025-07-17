@@ -1,5 +1,4 @@
 from . import db
-from datetime import datetime, timezone
 
 
 class OperationLog(db.Model):

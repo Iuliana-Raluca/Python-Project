@@ -34,7 +34,7 @@ def fibonacci_route():
         input_data=str(n),
         result=str(result),
         status_code=status,
-        timestamp=datetime.now(timezone.utc)   
+        timestamp=datetime.now(timezone.utc)
     )
     db.session.add(log)
     db.session.commit()
