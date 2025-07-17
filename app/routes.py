@@ -2,8 +2,10 @@ from flask import Blueprint, request, jsonify
 from .services import MathService
 from .validators import Validator
 from .models import db, OperationLog
+from datetime import datetime, timezone
 
 bp = Blueprint("routes", __name__)
+
 
 @bp.route("/fibbo", methods=["GET", "POST"])
 def fibonacci_route():
@@ -11,9 +13,10 @@ def fibonacci_route():
         if request.method == "POST":
             data = request.get_json()
             n = data.get("n")
+            operation_str = request.path + " " + str(data)
         else:
             n = request.args.get("n", type=int)
-        
+            operation_str = request.path + "?" + request.query_string.decode()
         Validator.validate_positive_int(n)
 
         result = MathService.fibbo(n)
@@ -27,10 +30,11 @@ def fibonacci_route():
         status = 500
 
     log = OperationLog(
-        operation="fibbo",
+        operation=operation_str,
         input_data=str(n),
         result=str(result),
-        status_code=status 
+        status_code=status,
+        timestamp=datetime.now(timezone.utc)   
     )
     db.session.add(log)
     db.session.commit()
@@ -46,26 +50,33 @@ def pow_route():
     try:
         if request.method == "POST":
             data = request.get_json()
-            n = data.get("n")
+            a = data.get("a")
+            b = data.get("b")
+            operation_str = request.path + " " + str(data)
         else:
-            n = request.args.get("n", type=int)
-            
-        Validator.validate_positive_int(n)
-        result = MathService.pow(n)
+            a = request.args.get("a", type=int)
+            b = request.args.get("b", type=int)
+            operation_str = request.path + "?" + request.query_string.decode()
+
+        Validator.validate_positive_int(a)
+        Validator.validate_positive_int(b)
+
+        result = MathService.pow(a, b)
         status = 200
 
     except (ValueError, TypeError) as e:
         result = str(e)
         status = 400
     except Exception as e:
-        result = "Eroare interna: " + str(e)
+        result = "Eroare internă: " + str(e)
         status = 500
 
     log = OperationLog(
-        operation="pow",
-        input_data=str(n),
+        operation=operation_str,
+        input_data=f"a={a}, b={b}",
         result=str(result),
-        status_code=status
+        status_code=status,
+        timestamp=datetime.now(timezone.utc)
     )
     db.session.add(log)
     db.session.commit()
@@ -82,8 +93,10 @@ def factorial_route():
         if request.method == "POST":
             data = request.get_json()
             n = data.get("n")
+            operation_str = request.path + " " + str(data)
         else:
             n = request.args.get("n", type=int)
+            operation_str = request.path + "?" + request.query_string.decode()
 
         Validator.validate_positive_int(n)
         result = MathService.factorial(n)
@@ -97,10 +110,11 @@ def factorial_route():
         status = 500
 
     log = OperationLog(
-        operation="factorial",
+        operation=operation_str,
         input_data=str(n),
         result=str(result),
-        status_code=status
+        status_code=status,
+        timestamp=datetime.now(timezone.utc)
     )
     db.session.add(log)
     db.session.commit()
