@@ -5,3 +5,4 @@ class OperationLog(db.Model):
     operation = db.Column(db.String(50))
     input_data = db.Column(db.Text)
     result = db.Column(db.Text)
+    status_code = db.Column(db.Integer)
