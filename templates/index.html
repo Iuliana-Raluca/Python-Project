@@ -149,16 +149,23 @@
             showResult(data, !!data.error);
         };
         document.getElementById('factorial-form').onsubmit = async function(e) {
-            e.preventDefault();
-            const n = document.getElementById('factorial-n').value;
-            const res = await fetch('/factorial', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({n: Number(n)})
-            });
-            const data = await res.json();
-            showResult(data, !!data.error);
-        };
+        e.preventDefault();
+        const n = document.getElementById('factorial-n').value;
+
+        const res = await fetch(`/factorial`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-API-KEY': '123AB'
+            },
+            body: JSON.stringify({ n: Number(n) })
+        });
+
+        const data = await res.json();
+        showResult(data, !!data.error);
+    };
+
+
     </script>
 </body>
 </html>

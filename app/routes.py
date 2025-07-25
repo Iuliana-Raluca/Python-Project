@@ -41,34 +41,34 @@ async def fibonacci_route():
         else:
             n = request.args.get("n", type=int)
             operation_str = request.path + "?" + request.query_string.decode()
-        Validator.validate_positive_int(n, operation="fibonacci")
-        result = Validator.safe_math_call(MathService.fibbo, n)
+        n_valid = Validator.validate_positive_int(n, operation="fibonacci")
+        if n_valid > Validator.MAX_VALUES["fibonacci"]:
+            raise ValueError(f"Valoarea este prea mare pentru operatia Fibonacci. Limita este {Validator.MAX_VALUES['fibonacci']}")
+        result = Validator.safe_math_call(MathService.fibbo, n_valid)
         status = 200
-
-    except (ValueError, TypeError) as e:
+    except (ValueError, OverflowError) as e:
         result = str(e)
         status = 400
     except Exception as e:
         result = "Eroare interna: " + str(e)
         status = 500
-
-    await async_log_operation(
-        operation_str,
-        str(n),
-        str(result),
-        status,
-        datetime.now(timezone.utc).isoformat()
-    )
-
+    try:
+        await async_log_operation(
+            operation_str,
+            str(n) if 'n' in locals() else "",
+            str(result),
+            status,
+            datetime.now(timezone.utc).isoformat()
+        )
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
     if status == 200:
         return jsonify({"result": result}), 200
     else:
-        Validator.validate_positive_int(n, operation="factorial")
-        if n > Validator.MAX_VALUES["factorial"]:
-            raise ValueError(f"Valoarea este prea mare pentru operația factorial. Limita este {Validator.MAX_VALUES['factorial']}")
-        result = Validator.safe_math_call(MathService.factorial, n)
-        status = 200
-@bp.route("/pow", methods=["GET", "POST"])
+        return jsonify({"error": result}), status
+
+
+@bp.route('/pow', methods=['POST'])
 async def pow_route():
     operation_str = ""
     try:
@@ -90,7 +90,7 @@ async def pow_route():
         result = Validator.safe_math_call(MathService.pow, a, b)
         status = 200
 
-    except (ValueError, TypeError) as e:
+    except (ValueError, OverflowError) as e:
         result = str(e)
         status = 400
     except Exception as e:
@@ -134,7 +134,7 @@ async def factorial_route():
         result = Validator.safe_math_call(MathService.factorial, n)
         status = 200
 
-    except (ValueError, TypeError) as e:
+    except (ValueError, OverflowError) as e:
         result = str(e)
         status = 400
     except Exception as e:

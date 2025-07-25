@@ -1,8 +1,5 @@
-<<<<<<< Updated upstream
 from flask import Flask, jsonify
-=======
 from flask import Flask, render_template
->>>>>>> Stashed changes
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
@@ -14,6 +11,7 @@ def create_app():
 
     db.init_app(app)
 
+    from .models import OperationLog  
     with app.app_context():
         db.create_all()
 
