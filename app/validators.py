@@ -32,7 +32,6 @@ class Validator:
 
     @staticmethod
     def validate_positive_int(value, operation=None):
-        # MODIFICARE: returnează valoarea validată (int)
         if isinstance(value, str):
             if value.isdigit():
                 value = int(value)
@@ -45,3 +44,27 @@ class Validator:
         if operation and value > Validator.MAX_VALUES.get(operation, 100000):
             raise ValueError(f"Valoarea este prea mare pentru operatia {operation}. Limita este {Validator.MAX_VALUES[operation]}")
         return value
+    
+    from functools import wraps
+from flask import session, redirect, jsonify
+
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if "user" not in session:
+            return redirect("/login")
+        return f(*args, **kwargs)
+    return decorated
+
+def role_required(role):
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            if "user" not in session:
+                return redirect("/login")
+            if session["user"]["role"] != role:
+                return jsonify({"error": "Nu ai permisiuni."}), 403
+            return f(*args, **kwargs)
+        return wrapper
+    return decorator
+
