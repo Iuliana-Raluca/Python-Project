@@ -8,29 +8,32 @@ from datetime import datetime, timezone
 import asyncio
 import aiosqlite
 from .validators import require_api_key
-from flask import request, session, redirect, render_template, flash, url_for
+from flask import redirect, flash, url_for
 from app.models import User
 from app import db
 from functools import wraps
 from flask_login import login_required, current_user, login_user
-
-
+from flask import session
 
 
 bp = Blueprint("routes", __name__, template_folder="../templates")
 
 
-
 async def async_log_operation(operation, input_data, result, status_code, timestamp):
     await asyncio.sleep(2)
-    db_path = r"C:\Users\iubutnariu\Desktop\Materiale\Python Project\flask_microservice\instance\database.db" 
+    db_path = (
+        r"c:\Users\iubutnariu\Desktop\Materiale\Python Project"
+        r"\flask_microservice\instance\database.db"
+        )
     query = """
-        INSERT INTO operation_log (operation, input_data, result, status_code, timestamp)
+        INSERT INTO operation_log
+        (operation, input_data, result, status_code, timestamp)
         VALUES (?, ?, ?, ?, ?)
     """
     async with aiosqlite.connect(db_path) as db:
         await db.execute(query, (operation, input_data, result, status_code, timestamp))
         await db.commit()
+
 
 @bp.route("/")
 def root():
@@ -41,10 +44,12 @@ def root():
 def index():
     return render_template("index.html")
 
+
 @bp.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html', role=current_user.role, username=current_user.username)
+    return render_template(
+        'dashboard.html', role=current_user.role, username=current_user.username)
 
 
 @bp.route("/fibbo", methods=["GET", "POST"])
@@ -64,7 +69,10 @@ async def fibonacci_route():
             operation_str = request.path + "?" + request.query_string.decode()
         n_valid = Validator.validate_positive_int(n, operation="fibonacci")
         if n_valid > Validator.MAX_VALUES["fibonacci"]:
-            raise ValueError(f"Valoarea este prea mare pentru operatia Fibonacci. Limita este {Validator.MAX_VALUES['fibonacci']}")
+            raise ValueError(
+                f"Valoarea este prea mare pentru operatia Fibonacci. "
+                f"Limita este {Validator.MAX_VALUES['fibonacci']}"
+                )
         result = Validator.safe_math_call(MathService.fibbo, n_valid)
         status = 200
     except (ValueError, OverflowError) as e:
@@ -133,7 +141,7 @@ async def pow_route():
 
 
 @bp.route("/factorial", methods=["GET", "POST"])
-@require_api_key 
+@require_api_key
 async def factorial_route():
     operation_str = ""
     try:
@@ -151,7 +159,9 @@ async def factorial_route():
 
         Validator.validate_positive_int(n, operation="factorial")
         if n > Validator.MAX_VALUES["factorial"]:
-            raise ValueError(f"Valoarea este prea mare pentru operația factorial. Limita este {Validator.MAX_VALUES['factorial']}")
+            raise ValueError(
+                f"Valoarea este prea mare pentru operația factorial."
+                f"Limita este {Validator.MAX_VALUES['factorial']}")
         result = Validator.safe_math_call(MathService.factorial, n)
         status = 200
 
@@ -175,7 +185,6 @@ async def factorial_route():
     else:
         return jsonify({"error": result}), status
 
-from flask import session
 
 @bp.route("/login", methods=["GET", "POST"])
 def login():
@@ -185,7 +194,7 @@ def login():
 
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
-            login_user(user)  
+            login_user(user)
             return redirect("/dashboard")
 
         flash("Date greșite.")
@@ -198,6 +207,7 @@ def login():
 def logout():
     session.clear()
     return redirect("/login")
+
 
 @bp.route("/register", methods=["GET", "POST"])
 def register():
@@ -220,6 +230,7 @@ def register():
 
     return render_template("register.html")
 
+
 def login_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
@@ -227,6 +238,7 @@ def login_required(f):
             return redirect("/login")
         return f(*args, **kwargs)
     return wrapper
+
 
 def role_required(role):
     def decorator(f):
@@ -238,12 +250,13 @@ def role_required(role):
         return wrapper
     return decorator
 
+
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if session.get("role") != "admin":
             flash("Nu aveți permisiuni pentru a accesa această pagină.")
-            return redirect(url_for("routes.dashboard"))  
+            return redirect(url_for("routes.dashboard"))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -254,8 +267,14 @@ async def loguri():
     from flask import redirect, url_for
     if not current_user.is_authenticated or current_user.role != 'admin':
         return redirect(url_for('routes.dashboard'))
-    db_path = r"C:\Users\iubutnariu\Desktop\Materiale\Python Project\flask_microservice\instance\database.db"
-    query = "SELECT id, operation, input_data, result, status_code, timestamp FROM operation_log ORDER BY id DESC LIMIT 100"
+    db_path = (
+        r"c:\Users\iubutnariu\Desktop\Materiale\Python Project"
+        r"\flask_microservice\instance\database.db"
+        )
+    query = (
+        "SELECT id, operation, input_data, result, status_code, timestamp "
+        "FROM operation_log ORDER BY id DESC LIMIT 100"
+        )
     logs = []
     import aiosqlite
     async with aiosqlite.connect(db_path) as db:

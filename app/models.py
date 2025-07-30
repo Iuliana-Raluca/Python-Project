@@ -1,5 +1,6 @@
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
 
 class OperationLog(db.Model):
@@ -10,8 +11,6 @@ class OperationLog(db.Model):
     status_code = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime)
 
-
-from flask_login import UserMixin
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)

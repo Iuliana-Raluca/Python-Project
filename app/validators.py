@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import request, jsonify, current_app
+from flask import request, jsonify, current_app, session, redirect
 
 
 def require_api_key(f):
@@ -17,8 +17,14 @@ class Validator:
     def safe_math_call(func, *args, **kwargs):
         try:
             result = func(*args, **kwargs)
-            if result is None or (isinstance(result, float) and (result == float('inf') or result == float('-inf'))):
-                raise ValueError("Rezultatul este prea mare sau nu poate fi calculat corect.")
+            if result is None or (
+                isinstance(result, float) and (
+                    result == float("inf") or result == float("-inf")
+                )
+            ):
+
+                raise ValueError(
+                    "Rezultatul este prea mare sau nu poate fi calculat corect.")
             if not isinstance(result, int):
                 raise ValueError("Rezultatul nu este un intreg valid.")
             return result
@@ -42,11 +48,12 @@ class Validator:
         if value < 0:
             raise ValueError("Valoarea trebuie sa fie pozitiva.")
         if operation and value > Validator.MAX_VALUES.get(operation, 100000):
-            raise ValueError(f"Valoarea este prea mare pentru operatia {operation}. Limita este {Validator.MAX_VALUES[operation]}")
+            raise ValueError(
+                f"Valoarea este prea mare pentru operatia {operation}. "
+                f"Limita este {Validator.MAX_VALUES[operation]}"
+            )
         return value
-    
-    from functools import wraps
-from flask import session, redirect, jsonify
+
 
 def login_required(f):
     @wraps(f)
@@ -55,6 +62,7 @@ def login_required(f):
             return redirect("/login")
         return f(*args, **kwargs)
     return decorated
+
 
 def role_required(role):
     def decorator(f):
@@ -67,4 +75,3 @@ def role_required(role):
             return f(*args, **kwargs)
         return wrapper
     return decorator
-
