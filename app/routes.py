@@ -1,3 +1,4 @@
+
 from pydantic import ValidationError
 from .schemas import FactorialInput, FibonacciInput, PowInput
 from flask import Blueprint, request, jsonify, render_template
@@ -11,12 +12,14 @@ from flask import request, session, redirect, render_template, flash, url_for
 from app.models import User
 from app import db
 from functools import wraps
-from flask_login import login_required, current_user
+from flask_login import login_required, current_user, login_user
 
 
 
 
 bp = Blueprint("routes", __name__, template_folder="../templates")
+
+
 
 async def async_log_operation(operation, input_data, result, status_code, timestamp):
     await asyncio.sleep(2)
@@ -29,14 +32,19 @@ async def async_log_operation(operation, input_data, result, status_code, timest
         await db.execute(query, (operation, input_data, result, status_code, timestamp))
         await db.commit()
 
+@bp.route("/")
+def root():
+    return redirect(url_for("routes.register"))
+
+
 @bp.route("/home")
 def index():
     return render_template("index.html")
 
-@bp.route("/dashboard")
+@bp.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template("dashboard.html", user=current_user)
+    return render_template('dashboard.html', role=current_user.role, username=current_user.username)
 
 
 @bp.route("/fibbo", methods=["GET", "POST"])
@@ -177,8 +185,8 @@ def login():
 
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
-            session["user"] = {"username": user.username, "role": user.role}
-            return redirect("/home")
+            login_user(user)  
+            return redirect("/dashboard")
 
         flash("Date greșite.")
         return redirect("/login")
@@ -239,8 +247,26 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-@bp.route("/logs")
-@admin_required
-def view_logs():
-    logs = OperationLog.query.order_by(OperationLog.timestamp.desc()).all()
-    return render_template("logs.html", logs=logs)
+
+@bp.route('/loguri')
+async def loguri():
+    from flask_login import current_user
+    from flask import redirect, url_for
+    if not current_user.is_authenticated or current_user.role != 'admin':
+        return redirect(url_for('routes.dashboard'))
+    db_path = r"C:\Users\iubutnariu\Desktop\Materiale\Python Project\flask_microservice\instance\database.db"
+    query = "SELECT id, operation, input_data, result, status_code, timestamp FROM operation_log ORDER BY id DESC LIMIT 100"
+    logs = []
+    import aiosqlite
+    async with aiosqlite.connect(db_path) as db:
+        async with db.execute(query) as cursor:
+            async for row in cursor:
+                logs.append({
+                    'id': row[0],
+                    'operation': row[1],
+                    'input_data': row[2],
+                    'result': row[3],
+                    'status_code': row[4],
+                    'timestamp': row[5]
+                })
+    return render_template('loguri.html', logs=logs)

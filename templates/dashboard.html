@@ -2,174 +2,77 @@
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard - Flask Microservice</title>
+    <title>Dashboard</title>
     <style>
         body {
-            margin: 0;
             font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
             background: #f4f6fa;
             display: flex;
             height: 100vh;
         }
+
         .sidebar {
-            width: 220px;
+            width: 260px;
             background: #2d8cf0;
             color: white;
+            padding: 30px 20px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            padding: 20px;
         }
+
+        .sidebar h2 {
+            margin-bottom: 30px;
+            font-size: 22px;
+        }
+
         .sidebar a {
-            color: white;
             text-decoration: none;
-            margin: 10px 0;
+            background: white;
+            color: #2d8cf0;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 16px;
             font-weight: bold;
-            display: block;
+            transition: background 0.3s, color 0.3s;
         }
+
         .sidebar a:hover {
-            text-decoration: underline;
+            background: #e6f0ff;
+            color: #105baf;
         }
+
         .main {
             flex-grow: 1;
-            padding: 40px;
+            padding: 60px;
         }
-        .box {
-            max-width: 450px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 16px;
-            padding: 36px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+
+        .main h1 {
+            font-size: 32px;
+            color: #2d3e50;
+            margin-bottom: 10px;
         }
-        select, input, button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 8px;
-            margin-bottom: 20px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
-        .result, .error {
-            padding: 12px;
-            border-radius: 6px;
-            margin-top: 10px;
-        }
-        .result {
-            background-color: #eaf6ff;
-            color: #333;
-        }
-        .error {
-            background-color: #ffeaea;
-            color: #a00;
+
+        .main p {
+            color: #555;
         }
     </style>
 </head>
 <body>
     <div class="sidebar">
-        <div>
-            <a href="{{ url_for('routes.dashboard') }}">Microservicii</a>
-            {% if session.get('role') == 'admin' %}
-                <a href="{{ url_for('routes.logs') }}">Loguri</a>
-            {% endif %}
-        </div>
-        <div>
-            <a href="{{ url_for('routes.logout') }}">Logout</a>
-        </div>
+        <h2>Bun venit, {{ username }}!</h2>
+        <a href="/home">Microservicii</a>
+        {% if role == "admin" %}
+            <a href="/loguri">Vizualizare loguri</a>
+        {% endif %}
+        <a href="/logout">Logout</a>
     </div>
 
     <div class="main">
-        <div class="box">
-            <h2>Flask Microservice</h2>
-            <select id="endpoint-select">
-                <option value="">Alege operația...</option>
-                <option value="fibbo">Fibonacci</option>
-                <option value="pow">Putere a^b</option>
-                <option value="factorial">Factorial</option>
-            </select>
-
-            <form id="fibbo-form" class="form-section" style="display:none">
-                <label for="fibbo-n">n:</label>
-                <input type="number" id="fibbo-n">
-                <button type="submit">Calculează Fibonacci</button>
-            </form>
-
-            <form id="pow-form" class="form-section" style="display:none">
-                <label for="pow-a">a:</label>
-                <input type="number" id="pow-a">
-                <label for="pow-b">b:</label>
-                <input type="number" id="pow-b">
-                <button type="submit">Calculează a^b</button>
-            </form>
-
-            <form id="factorial-form" class="form-section" style="display:none">
-                <label for="factorial-n">n:</label>
-                <input type="number" id="factorial-n">
-                <button type="submit">Calculează Factorial</button>
-            </form>
-
-            <div id="output"></div>
-        </div>
+        <h1>Dashboard</h1>
+        <p>Selectează o acțiune din meniul din stânga.</p>
     </div>
-
-    <script>
-        const endpointSelect = document.getElementById('endpoint-select');
-        const forms = {
-            fibbo: document.getElementById('fibbo-form'),
-            pow: document.getElementById('pow-form'),
-            factorial: document.getElementById('factorial-form')
-        };
-        endpointSelect.onchange = function () {
-            Object.values(forms).forEach(f => f.style.display = 'none');
-            if (forms[this.value]) {
-                forms[this.value].style.display = 'block';
-                document.getElementById('output').innerHTML = '';
-            }
-        };
-        function showResult(data, isError = false) {
-            const output = document.getElementById('output');
-            output.innerHTML = `<div class="${isError ? 'error' : 'result'}">${isError ? data.error : 'Rezultat: ' + data.result}</div>`;
-        }
-
-        document.getElementById('fibbo-form').onsubmit = async function (e) {
-            e.preventDefault();
-            const n = document.getElementById('fibbo-n').value;
-            const res = await fetch('/fibbo', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ n: Number(n) })
-            });
-            const data = await res.json();
-            showResult(data, !!data.error);
-        };
-
-        document.getElementById('pow-form').onsubmit = async function (e) {
-            e.preventDefault();
-            const a = document.getElementById('pow-a').value;
-            const b = document.getElementById('pow-b').value;
-            const res = await fetch('/pow', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ a: Number(a), b: Number(b) })
-            });
-            const data = await res.json();
-            showResult(data, !!data.error);
-        };
-
-        document.getElementById('factorial-form').onsubmit = async function (e) {
-            e.preventDefault();
-            const n = document.getElementById('factorial-n').value;
-            const res = await fetch('/factorial', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-API-KEY': '123AB'
-                },
-                body: JSON.stringify({ n: Number(n) })
-            });
-            const data = await res.json();
-            showResult(data, !!data.error);
-        };
-    </script>
 </body>
 </html>
