@@ -58,6 +58,7 @@ def dashboard():
 
 
 @bp.route("/fibbo", methods=["GET", "POST"])
+@require_api_key
 async def fibonacci_route():
     operation_str = ""
     try:

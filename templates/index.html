@@ -131,12 +131,16 @@
             const n = document.getElementById('fibbo-n').value;
             const res = await fetch('/fibbo', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-API-KEY': '123AB'
+                },
                 body: JSON.stringify({n: Number(n)})
             });
             const data = await res.json();
             showResult(data, !!data.error);
         };
+
         document.getElementById('pow-form').onsubmit = async function(e) {
             e.preventDefault();
             const a = document.getElementById('pow-a').value;
