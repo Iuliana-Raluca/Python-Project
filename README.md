@@ -141,8 +141,3 @@ echo 'INSERT-TEST-COMMAND-HERE'
 pytest
 ```
 
----
-
-<div align="left"><a href="#top">⬆ Return</a></div>
-
----
