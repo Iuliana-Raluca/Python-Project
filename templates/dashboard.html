@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f6fa;
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #2d8cf0;
+            color: white;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 30px;
+            font-size: 22px;
+        }
+
+        .sidebar a {
+            text-decoration: none;
+            background: white;
+            color: #2d8cf0;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 16px;
+            font-weight: bold;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .sidebar a:hover {
+            background: #e6f0ff;
+            color: #105baf;
+        }
+
+        .main {
+            flex-grow: 1;
+            padding: 60px;
+        }
+
+        .main h1 {
+            font-size: 32px;
+            color: #2d3e50;
+            margin-bottom: 10px;
+        }
+
+        .main p {
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Bun venit, {{ username }}!</h2>
+        <a href="/home">Microservicii</a>
+        {% if role == "admin" %}
+            <a href="/loguri">Vizualizare loguri</a>
+        {% endif %}
+        <a href="/logout">Logout</a>
+    </div>
+
+    <div class="main">
+        <h1>Dashboard</h1>
+        <p>Selectează o acțiune din meniul din stânga.</p>
+    </div>
+</body>
+</html>
