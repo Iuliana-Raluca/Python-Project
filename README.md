@@ -37,7 +37,7 @@
 
 ## Overview
 
-Python-Project is a comprehensive Python-based web application framework designed for scalable deployment and robust user management. It integrates microservices for mathematical computations, secure authentication, and detailed logging, all within a containerized environment.
+Python-Project is a Python-based web application framework designed for scalable deployment and user management. It integrates microservices for mathematical computations, secure authentication, and detailed logging, all within a containerized environment.
 
 **Why Python-Project?**
 
