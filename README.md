@@ -118,7 +118,7 @@ Run the project with:
 **Using [docker](https://www.docker.com/):**
 
 ```sh
-docker run -it {image_name}
+docker run -p 5000:5000 {image_name}
 ```
 **Using [pip](https://pypi.org/project/pip/):**
 
