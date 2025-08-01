@@ -6,7 +6,6 @@ from .services import MathService
 from .validators import Validator
 from datetime import datetime, timezone
 import asyncio
-import aiosqlite
 from .validators import require_api_key
 from flask import redirect, flash, url_for
 from app.models import User
@@ -14,6 +13,8 @@ from app import db
 from functools import wraps
 from flask_login import login_required, current_user, login_user
 from flask import session
+from flask import current_app
+import aiosqlite
 
 
 bp = Blueprint("routes", __name__, template_folder="../templates")
@@ -21,15 +22,19 @@ bp = Blueprint("routes", __name__, template_folder="../templates")
 
 async def async_log_operation(operation, input_data, result, status_code, timestamp):
     await asyncio.sleep(2)
-    db_path = (
-        r"c:\Users\iubutnariu\Desktop\Materiale\Python Project"
-        r"\flask_microservice\instance\database.db"
-        )
+    db_uri = current_app.config["SQLALCHEMY_DATABASE_URI"]
+
+    if db_uri.startswith("sqlite:///"):
+        db_path = db_uri.replace("sqlite:///", "")
+    else:
+        raise ValueError("Unsupported DB URI")
+
     query = """
         INSERT INTO operation_log
         (operation, input_data, result, status_code, timestamp)
         VALUES (?, ?, ?, ?, ?)
     """
+
     async with aiosqlite.connect(db_path) as db:
         await db.execute(query, (operation, input_data, result, status_code, timestamp))
         await db.commit()
@@ -267,14 +272,15 @@ async def loguri():
     from flask import redirect, url_for
     if not current_user.is_authenticated or current_user.role != 'admin':
         return redirect(url_for('routes.dashboard'))
-    db_path = (
-        r"c:\Users\iubutnariu\Desktop\Materiale\Python Project"
-        r"\flask_microservice\instance\database.db"
-        )
+
+    from flask import current_app
+
+    db_path = current_app.config['SQLALCHEMY_DATABASE_URI'].replace("sqlite:///", "")
+
     query = (
         "SELECT id, operation, input_data, result, status_code, timestamp "
         "FROM operation_log ORDER BY id DESC LIMIT 100"
-        )
+    )
     logs = []
     import aiosqlite
     async with aiosqlite.connect(db_path) as db:

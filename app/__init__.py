@@ -17,7 +17,7 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
 
-    from .models import User
+    from .models import User, OperationLog
 
     with app.app_context():
         db.create_all()
