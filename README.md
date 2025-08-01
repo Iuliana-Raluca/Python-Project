@@ -37,11 +37,11 @@ Python-Project is a Python-based web application framework designed for scalable
 
 This project aims to simplify the development and deployment of secure, scalable Python web applications. The core features include:
 
-- 🐳 **Dockerized Deployment:** Builds lightweight, efficient Docker images for seamless containerization.
-- 🔐 **User Authentication:** Provides registration, login, and role-based access control for secure user management.
-- ⚙️ **Mathematical Microservices:** Offers reliable Fibonacci, factorial, and power calculations with caching for performance.
-- 📊 **Logging & Monitoring:** Includes interfaces for viewing logs and system activities, aiding troubleshooting.
-- 🖥️ **Modular Architecture:** Clear separation of concerns with dedicated models, schemas, and services for maintainability.
+-  **Dockerized Deployment:** Builds lightweight, efficient Docker images for seamless containerization.
+-  **User Authentication:** Provides registration, login, and role-based access control for secure user management.
+-  **Mathematical Microservices:** Offers reliable Fibonacci, factorial, and power calculations with caching for performance.
+-  **Logging & Monitoring:** Includes interfaces for viewing logs and system activities, aiding troubleshooting.
+-  **Modular Architecture:** Clear separation of concerns with dedicated models, schemas, and services for maintainability.
 
 ---
 
