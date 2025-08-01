@@ -6,12 +6,6 @@
 
 # PYTHON-PROJECT
 
-<em>Empowering Seamless, Scalable Python Web Innovation</em>
-
-<!-- BADGES -->
-<img src="https://img.shields.io/github/last-commit/Iuliana-Raluca/Python-Project?style=flat&logo=git&logoColor=white&color=0080ff" alt="last-commit">
-<img src="https://img.shields.io/github/languages/top/Iuliana-Raluca/Python-Project?style=flat&color=0080ff" alt="repo-top-language">
-<img src="https://img.shields.io/github/languages/count/Iuliana-Raluca/Python-Project?style=flat&color=0080ff" alt="repo-language-count">
 
 <em>Built with the tools and technologies:</em>
 
@@ -37,7 +31,7 @@
 
 ## Overview
 
-Python-Project is a comprehensive Python-based web application framework designed for scalable deployment and robust user management. It integrates microservices for mathematical computations, secure authentication, and detailed logging, all within a containerized environment.
+Python-Project is a Python-based web application framework designed for scalable deployment and user management. It integrates microservices for mathematical computations, secure authentication, and detailed logging, all within a containerized environment.
 
 **Why Python-Project?**
 
